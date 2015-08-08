@@ -1,6 +1,9 @@
 #ifndef UTILS_BOUNDED_QUEUE_HPP
 #define UTILS_BOUNDED_QUEUE_HPP
 
+#include <assert.h>
+#include <vector>
+#include <cstddef>
 template<typename T>
 class BoundedQueue {
 public:
@@ -41,12 +44,17 @@ public:
     }
 
     explicit BoundedQueue(size_t capacity) :
-            capacity_(capacity), buff_(capacity),
-            head_(0), tail_(0), size_(0) {}
+            capacity_(capacity),
+            buff_(capacity),
+            head_(0),
+            tail_(0),
+            size_(0) {}
 
     explicit BoundedQueue(const BoundedQueue& other) :
-            head_(other.head_), tail_(other.tail_),
-            size_(other.size_), capacity_(other.capacity_),
+            head_(other.head_),
+            tail_(other.tail_),
+            size_(other.size_),
+            capacity_(other.capacity_),
             buff_(other.buff_) {}
 
     explicit BoundedQueue(BoundedQueue&& other) :
@@ -80,7 +88,7 @@ private:
     size_t tail_;
     size_t size_;
     const size_t capacity_;
-    vector<T> buff_;
+    std::vector<T> buff_;
 };
 
 
