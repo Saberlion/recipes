@@ -11,9 +11,10 @@
 #include <functional>
 #include <stdexcept>
 #include <atomic>
+#include "NonCopyable.hpp"
 namespace saberUtils
 {
-    class ThreadPool {
+    class ThreadPool :public Noncopyable{
     public:
         ThreadPool(size_t);
         template<class F, class... Args>
