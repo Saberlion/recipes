@@ -4,16 +4,21 @@
 
 #ifndef RECIPES_NONCOPYABLE_HPP
 #define RECIPES_NONCOPYABLE_HPP
-
-class Noncopyable
+namespace saberUtils
 {
-public:
-    Noncopyable()=default;
 
-    Noncopyable(const Noncopyable&) = delete ;
-    Noncopyable(Noncopyable&&) = delete;
-    Noncopyable& operator =(const Noncopyable& ) = delete;
-    Noncopyable& operator =(Noncopyable&& ) = delete;
-};
+    class Noncopyable
+    {
+    public:
+        Noncopyable()=default;
+
+        Noncopyable(const Noncopyable&) = delete ;
+        Noncopyable(Noncopyable&&) = delete;
+        Noncopyable& operator =(const Noncopyable& ) = delete;
+        Noncopyable& operator =(Noncopyable&& ) = delete;
+    };
+
+}
+
 
 #endif //RECIPES_NONCOPYABLE_HPP
