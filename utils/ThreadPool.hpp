@@ -23,22 +23,22 @@ namespace saberUtils
         ~ThreadPool();
     private:
         // need to keep track of threads so we can join them
-        std::vector< std::thread > workers;
+        std::vector< std::thread > workers_;
         // the task queue
-        std::queue< std::function<void()> > tasks;
+        std::queue< std::function<void()> > tasks_;
 
         // synchronization
-        std::mutex queue_mutex;
-        std::condition_variable condition;
-        std::atomic<bool> stop;
+        std::mutex queue_mutex_;
+        std::condition_variable condition_;
+        std::atomic<bool> stop_;
     };
 
-// the constructor just launches some amount of workers
+// the constructor just launches some amount of workers_
     inline ThreadPool::ThreadPool(size_t threads)
-            :   stop(false)
+            :   stop_(false)
     {
         for(size_t i = 0;i<threads;++i)
-            workers.emplace_back(
+            workers_.emplace_back(
                     [this]
                     {
                         for(;;)
@@ -46,13 +46,13 @@ namespace saberUtils
                             std::function<void()> task;
 
                             {
-                                std::unique_lock<std::mutex> lock(this->queue_mutex);
-                                this->condition.wait(lock,
-                                                     [this]{ return this->stop || !this->tasks.empty(); });
-                                if(this->stop && this->tasks.empty())
+                                std::unique_lock<std::mutex> lock(this->queue_mutex_);
+                                this->condition_.wait(lock,
+                                                     [this]{ return this->stop_ || !this->tasks_.empty(); });
+                                if(this->stop_ && this->tasks_.empty())
                                     return;
-                                task = std::move(this->tasks.front());
-                                this->tasks.pop();
+                                task = std::move(this->tasks_.front());
+                                this->tasks_.pop();
                             }
 
                             task();
@@ -74,15 +74,15 @@ namespace saberUtils
 
         std::future<return_type> res = task->get_future();
         {
-            std::unique_lock<std::mutex> lock(queue_mutex);
+            std::unique_lock<std::mutex> lock(queue_mutex_);
 
             // don't allow enqueueing after stopping the pool
-            if(stop)
+            if(stop_)
                 throw std::runtime_error("enqueue on stopped ThreadPool");
 
-            tasks.emplace([task](){ (*task)(); });
+            tasks_.emplace([task](){ (*task)(); });
         }
-        condition.notify_one();
+        condition_.notify_one();
         return res;
     }
 
@@ -90,11 +90,11 @@ namespace saberUtils
     inline ThreadPool::~ThreadPool()
     {
         {
-            std::unique_lock<std::mutex> lock(queue_mutex);
-            stop = true;
+            std::unique_lock<std::mutex> lock(queue_mutex_);
+            stop_ = true;
         }
-        condition.notify_all();
-        for(std::thread &worker: workers)
+        condition_.notify_all();
+        for(std::thread &worker: workers_)
             worker.join();
     }
 }
