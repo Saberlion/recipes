@@ -6,7 +6,6 @@
 #define RECIPES_NONCOPYABLE_HPP
 namespace saberUtils
 {
-
     class Noncopyable
     {
     public:
