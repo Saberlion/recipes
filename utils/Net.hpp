@@ -18,7 +18,7 @@
 #include <string>
 #include "Logger.hpp"
 
-namespace saberutils {
+namespace saberUtils {
 
 
     using namespace std;
